@@ -315,7 +315,7 @@ RECEIVER_EMAIL_ADDR = ""  # set receiver's address''')
         pass
 
 if __name__ == '__main__':
-  multiprocessing.freeze_support()
+  multiprocessing.freeze_support() # For pyinstaller (Not related to keylogger)
   keylogClass = KeyLog()
   keylogClass.mainModule()
   
