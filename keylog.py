@@ -315,15 +315,5 @@ if __name__ == '__main__':
   keylogClass = KeyLog()
   keylogClass.mainModule()
 
-#   # CHANGE CONFIG 
-#   def updateConfigFile(self):
-#     newVar = ('''
-# # Sender's email & password
-# SENDER_EMAIL_ADDR = ""    # set sender's email address
-# SENDER_PASS = ""          # set sender's password
 
-# # Receiver's email
-# RECEIVER_EMAIL_ADDR = ""  # set receiver's address''')
-#     with open ("config.py", "w") as configFile:
-#       configFile.write(newVar)
   
