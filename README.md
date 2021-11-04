@@ -12,3 +12,4 @@ A keylogger is an insidious form of spyware. You enter sensitive data onto your 
 :pushpin: Encrypt and Decrypt files.<br/>
 :pushpin: Mails Data at every 120 minutes.<br/>
 :pushpin: Deletes all stored logs after mailing it.<br/>
+:pushpin: Deletes keylogger script if stopped by user.<br/>
